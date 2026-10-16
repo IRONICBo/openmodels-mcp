@@ -23,7 +23,7 @@ tags:
   - mcp
   - testing
 created_at: "2026-10-15T23:18:59.000Z"
-updated_at: "2026-10-15T23:18:59.000Z"
+updated_at: "2026-10-16T09:37:00.000Z"
 tools:
   - name: captcha_analyze
     description: >
@@ -99,8 +99,8 @@ tools:
       required: [session_id]
   - name: captcha_handoff
     description: >
-      Mark the current challenge as awaiting a person in the existing browser
-      session without copying cookies or challenge tokens.
+      Bind the current challenge to a caller-owned task and mark it as awaiting a
+      person in the existing browser session without copying cookies or tokens.
     input_schema:
       type: object
       additionalProperties: false
@@ -110,7 +110,12 @@ tools:
           minLength: 1
           maxLength: 200
           description: Configured browser session identifier.
-      required: [session_id]
+        task_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Caller-owned task or run identifier for this handoff.
+      required: [session_id, task_id]
   - name: captcha_wait
     description: >
       Poll the same browser session until fresh evidence shows that verification
@@ -137,8 +142,8 @@ tools:
       required: [session_id]
   - name: captcha_resume
     description: >
-      Re-inspect the existing browser session and resume its agent lifecycle only
-      after fresh clear or passed evidence.
+      Consume a matching handoff at most once, re-inspect the existing session,
+      and resume only after fresh clear or passed evidence.
     input_schema:
       type: object
       additionalProperties: false
@@ -148,15 +153,25 @@ tools:
           minLength: 1
           maxLength: 200
           description: Configured browser session identifier.
+        task_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Task identifier used for a human handoff. Supply with handoff_id.
+        handoff_id:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Opaque identifier returned by captcha_handoff. Supply with task_id.
       required: [session_id]
 install:
   npm: rea-captcha
   command: npx
   args:
-    - rea-captcha@0.2.4
+    - rea-captcha@0.3.0
     - mcp
     - --stateless
 env_vars: []
 license: MIT
-version: "0.2.4"
+version: "0.3.0"
 stars: 1
